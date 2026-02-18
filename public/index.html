@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calorie Tracker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Calorie Tracker</h1>
+      <p class="date-display" id="date-display"></p>
+    </header>
+
+    <section class="total-section">
+      <div id="total-display" class="total-display">Total: 0 cal</div>
+    </section>
+
+    <section class="form-section">
+      <form id="entry-form" novalidate>
+        <div class="form-group">
+          <label for="food-name">Food Name</label>
+          <input
+            type="text"
+            id="food-name"
+            placeholder="Food name"
+            autocomplete="off"
+            required
+          >
+          <span class="field-error" id="name-error"></span>
+        </div>
+        <div class="form-group">
+          <label for="calories">Calories</label>
+          <input
+            type="number"
+            id="calories"
+            placeholder="Calories"
+            min="1"
+            required
+          >
+          <span class="field-error" id="calories-error"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Entry</button>
+      </form>
+    </section>
+
+    <section class="entries-section">
+      <div class="entries-header">
+        <h2>Today's Entries</h2>
+        <button id="clear-btn" class="btn btn-warning">Clear Day</button>
+      </div>
+
+      <p id="empty-state" class="empty-state">No entries yet. Add your first meal!</p>
+
+      <ul id="entry-list" class="entry-list" aria-label="Food entries"></ul>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+# claude
+.claude/data
+logs
+
+# data
+data.json
