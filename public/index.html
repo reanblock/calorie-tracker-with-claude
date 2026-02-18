@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calorie Tracker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Calorie Tracker</h1>
+      <p id="today-date" class="date-display"></p>
+    </header>
+
+    <section class="total-section">
+      <div class="total-card">
+        <span class="total-label">Today's Total</span>
+        <span class="total-value" aria-label="daily total">0</span>
+        <span class="total-unit">calories</span>
+      </div>
+    </section>
+
+    <section class="form-section">
+      <h2>Add Food Entry</h2>
+      <form id="entry-form" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="food-name">Food Name</label>
+            <input
+              type="text"
+              id="food-name"
+              name="food-name"
+              placeholder="e.g. Apple, Chicken breast…"
+              autocomplete="off"
+              required
+            >
+          </div>
+          <div class="form-group form-group--narrow">
+            <label for="calories">Calories</label>
+            <input
+              type="number"
+              id="calories"
+              name="calories"
+              placeholder="e.g. 95"
+              min="0"
+              step="1"
+              required
+            >
+          </div>
+        </div>
+        <div id="form-error" class="error-message" role="alert" hidden></div>
+        <button type="submit" class="btn btn--primary">Add Entry</button>
+      </form>
+    </section>
+
+    <section class="entries-section">
+      <div class="entries-header">
+        <h2>Today's Log</h2>
+        <button
+          id="clear-day-btn"
+          aria-label="clear day"
+          class="btn btn--warning btn--small"
+        >Clear Day</button>
+      </div>
+
+      <div id="api-error" class="error-message" role="alert" hidden></div>
+
+      <p id="empty-state" class="empty-state">
+        No entries yet. Add your first meal above!
+      </p>
+
+      <ul id="entry-list" class="entry-list" aria-label="food entries"></ul>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
