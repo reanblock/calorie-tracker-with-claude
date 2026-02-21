@@ -14,7 +14,7 @@ A lightweight, zero-dependency daily calorie tracking web app. Built with a plai
 
 ## Requirements
 
-- Node.js 19+ (uses `crypto.randomUUID()`)
+- Node.js 20+ (uses `crypto.randomUUID()` and the built-in test runner)
 
 ## Running in Development
 
@@ -22,22 +22,47 @@ A lightweight, zero-dependency daily calorie tracking web app. Built with a plai
 node server.js
 ```
 
-Then open [http://localhost:3000](http://localhost:3000) in your browser.
+Then open (http://localhost:3000) in your browser.
 
 The `data.json` file is created automatically on first run. No installation or configuration needed.
+
+## Running Tests
+
+### Unit Tests
+
+Unit tests cover the core utility functions (`getTodayDate`, `sendJSON`, `parseBody`) using Node's built-in test runner — no external dependencies required.
+
+```bash
+npm test
+```
+
+### Integration Tests
+
+Integration tests exercise the full HTTP API end-to-end and require the server to be running first.
+
+```bash
+# Terminal 1 — start the server
+node server.js
+
+# Terminal 2 — run integration tests
+npm run test:integration
+```
 
 ## Project Structure
 
 ```
 .
-├── server.js        # Node.js HTTP server — API routes and static file serving
-├── data.json        # JSON data store — entries organized by date (auto-created)
+├── server.js           # Node.js HTTP server — API routes and static file serving
+├── utils.js            # Shared utility functions (getTodayDate, sendJSON, parseBody)
+├── package.json        # npm scripts for running tests
+├── data.json           # JSON data store — entries organized by date (auto-created)
 ├── public/
-│   ├── index.html   # Main UI
-│   ├── style.css    # Styles
-│   └── app.js       # Client-side JavaScript
+│   ├── index.html      # Main UI
+│   ├── style.css       # Styles
+│   └── app.js          # Client-side JavaScript
 └── tests/
-    └── integration.js  # Integration tests
+    ├── unit.test.js    # Unit tests (Node built-in test runner)
+    └── integration.js  # Integration tests (requires running server)
 ```
 
 ## API

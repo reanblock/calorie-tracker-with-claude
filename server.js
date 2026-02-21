@@ -1,7 +1,11 @@
+'use strict';
+
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+
+const { getTodayDate, sendJSON, parseBody } = require('./utils');
 
 const PORT = 3000;
 const DATA_FILE = path.join(__dirname, 'data.json');
@@ -16,14 +20,6 @@ const MIME_TYPES = {
   '.jpg': 'image/jpeg',
   '.svg': 'image/svg+xml',
 };
-
-function getTodayDate() {
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = String(now.getMonth() + 1).padStart(2, '0');
-  const d = String(now.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
-}
 
 function readData() {
   try {
@@ -40,30 +36,6 @@ function writeData(data) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf8');
 }
 
-function sendJSON(res, statusCode, body) {
-  const payload = JSON.stringify(body);
-  res.writeHead(statusCode, {
-    'Content-Type': 'application/json',
-    'Content-Length': Buffer.byteLength(payload),
-  });
-  res.end(payload);
-}
-
-function parseBody(req) {
-  return new Promise((resolve, reject) => {
-    let body = '';
-    req.on('data', chunk => { body += chunk; });
-    req.on('end', () => {
-      try {
-        resolve(body ? JSON.parse(body) : {});
-      } catch {
-        reject(new Error('Invalid JSON'));
-      }
-    });
-    req.on('error', reject);
-  });
-}
-
 function serveStaticFile(res, filePath) {
   fs.readFile(filePath, (err, data) => {
     if (err) {
@@ -71,7 +43,7 @@ function serveStaticFile(res, filePath) {
       return;
     }
     const ext = path.extname(filePath);
-    const contentType = MIME_TYPES[ext] || 'application/octet-stream';
+    const contentType = MIME_TYPES || 'application/octet-stream';
     res.writeHead(200, { 'Content-Type': contentType });
     res.end(data);
   });
@@ -89,7 +61,7 @@ const server = http.createServer(async (req, res) => {
       if (pathname === '/api/total' && method === 'GET') {
         const date = parsedUrl.searchParams.get('date') || getTodayDate();
         const data = readData();
-        const entries = data.entries[date] || [];
+        const entries = data.entries || [];
         const total = entries.reduce((sum, e) => sum + e.calories, 0);
         sendJSON(res, 200, { total });
         return;
@@ -104,7 +76,7 @@ const server = http.createServer(async (req, res) => {
           // GET /api/entries?date=YYYY-MM-DD
           const date = parsedUrl.searchParams.get('date') || getTodayDate();
           const data = readData();
-          const entries = data.entries[date] || [];
+          const entries = data.entries || [];
           sendJSON(res, 200, entries);
           return;
         }
@@ -144,10 +116,10 @@ const server = http.createServer(async (req, res) => {
           };
 
           const data = readData();
-          if (!data.entries[date]) {
-            data.entries[date] = [];
+          if (!data.entries) {
+            data.entries = [];
           }
-          data.entries[date].push(entry);
+          data.entries.push(entry);
           writeData(data);
 
           sendJSON(res, 201, entry);
@@ -160,14 +132,14 @@ const server = http.createServer(async (req, res) => {
             const id = segments[2];
             const date = getTodayDate();
             const data = readData();
-            const entries = data.entries[date] || [];
+            const entries = data.entries || [];
             const idx = entries.findIndex(e => e.id === id);
             if (idx === -1) {
               sendJSON(res, 404, { error: 'Entry not found' });
               return;
             }
             entries.splice(idx, 1);
-            data.entries[date] = entries;
+            data.entries = entries;
             writeData(data);
             res.writeHead(204);
             res.end();
@@ -176,7 +148,7 @@ const server = http.createServer(async (req, res) => {
             // DELETE /api/entries?date=YYYY-MM-DD — clear day
             const date = parsedUrl.searchParams.get('date') || getTodayDate();
             const data = readData();
-            data.entries[date] = [];
+            data.entries = [];
             writeData(data);
             res.writeHead(204);
             res.end();
@@ -200,7 +172,7 @@ const server = http.createServer(async (req, res) => {
       filePath = path.join(PUBLIC_DIR, 'index.html');
     } else {
       // Prevent directory traversal
-      const safePath = path.normalize(pathname).replace(/^(\.\.[\/\\])+/, '');
+      const safePath = path.normalize(pathname).replace(/^(\.\.[\\/])+/, '');
       filePath = path.join(PUBLIC_DIR, safePath);
     }
 

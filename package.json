@@ -1,0 +1,15 @@
+{
+  "name": "calorie-tracker",
+  "version": "1.0.0",
+  "description": "A lightweight zero-dependency daily calorie tracking web app.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test tests/unit.test.js",
+    "test:integration": "node tests/integration.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}
